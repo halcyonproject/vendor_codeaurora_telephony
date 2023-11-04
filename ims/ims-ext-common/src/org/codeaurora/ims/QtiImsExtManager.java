@@ -24,6 +24,10 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Changes from Qualcomm Innovation Center are provided under the following license:
+ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear.
  */
 package org.codeaurora.ims;
 
@@ -41,6 +45,7 @@ import java.util.ArrayList;
 import org.codeaurora.ims.internal.ICrsCrbtController;
 import org.codeaurora.ims.internal.IQtiImsExt;
 import org.codeaurora.ims.internal.IQtiImsExtListener;
+import org.codeaurora.ims.internal.IImsArController;
 import org.codeaurora.ims.internal.IImsMultiIdentityInterface;
 import org.codeaurora.ims.internal.IImsScreenShareController;
 import org.codeaurora.ims.utils.QtiImsExtUtils;
@@ -451,4 +456,42 @@ public class QtiImsExtManager {
             throw new QtiImsException("Remote ImsService isDataChannelEnabled: " + e);
         }
     }
+
+    public void sendVosSupportStatus(int phoneId, boolean isVosSupported,
+            IQtiImsExtListener listener) throws QtiImsException {
+        validateInvariants(phoneId);
+        try {
+            mQtiImsExt.sendVosSupportStatus(phoneId, isVosSupported, listener);
+        } catch (RemoteException e) {
+            throw new QtiImsException("Remote ImsService sendVosSupportStatus: " + e);
+        }
+    }
+
+    public void sendVosActionInfo(int phoneId, VosActionInfo vosActionInfo,
+            IQtiImsExtListener listener) throws QtiImsException {
+        validateInvariants(phoneId);
+        try {
+            mQtiImsExt.sendVosActionInfo(phoneId, vosActionInfo, listener);
+        } catch (RemoteException e) {
+            throw new QtiImsException("Remote ImsService sendVosActionInfo: " + e);
+        }
+    }
+
+    public ImsArManager createImsArManager(int phoneId)
+            throws QtiImsException {
+        validateInvariants(phoneId);
+        return new ImsArManager(phoneId, this);
+    }
+
+    /*package private*/
+    IImsArController getArController(int phoneId)
+            throws QtiImsException {
+        validateInvariants(phoneId);
+        try {
+            return mQtiImsExt.getArController(phoneId);
+        } catch(RemoteException e) {
+            throw new QtiImsException("Failed to retrieve ARInterface : " + e);
+        }
+    }
+
 }
